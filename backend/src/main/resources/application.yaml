@@ -1,0 +1,5 @@
+spring:
+  application.name: video_storage_backend
+
+  jpa:
+    hibernate.ddl-auto: none

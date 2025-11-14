@@ -3,3 +3,4 @@ spring:
     url: jdbc:postgresql://localhost:5433/activitydetectordb
     username: user
     password: password
+

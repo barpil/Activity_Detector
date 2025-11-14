@@ -3,3 +3,6 @@ spring:
 
   jpa:
     hibernate.ddl-auto: none
+
+video:
+  folderPath: ${VIDEO_FOLDER_PATH:/videos} #Sciezka wzieta ze zmiennej srodowiskowej lub jezeli jej nie ma domyslna wartosc /videos

@@ -9,12 +9,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class IdentifierToVideoMapperService {
+public class VideoService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Path videoFolderPath;
 
-    public IdentifierToVideoMapperService(@Value("${video.folderPath}") String relativeFolderPath) {
+    public VideoService(@Value("${activity-detector.video.folderPath}") String relativeFolderPath) {
         //Aktualnie sciezka do katalogu jest wzgledem katalogu w ktorym uruchamiamy projekt
         Path baseDir = Paths.get("").toAbsolutePath();
 
@@ -38,5 +38,6 @@ public class IdentifierToVideoMapperService {
                 throw new RuntimeException("WIDEO NIEZNANE: "+id);
         }
     }
+
 
 }

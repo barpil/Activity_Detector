@@ -15,14 +15,14 @@ import java.util.List;
 public class VideoSupplierService{
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final IdentifierToVideoMapperService identifierToVideoMapperService;
+    private final VideoService videoService;
 
-    public VideoSupplierService(IdentifierToVideoMapperService identifierToVideoMapperService) {
-        this.identifierToVideoMapperService = identifierToVideoMapperService;
+    public VideoSupplierService(VideoService videoService) {
+        this.videoService = videoService;
     }
 
     public ResourceRegion getVideoResourceRegion(String fileIdentifier, HttpHeaders headers) {
-        Resource videoMedia = new FileSystemResource(identifierToVideoMapperService.getVideoPathForIdentifier(fileIdentifier));
+        Resource videoMedia = new FileSystemResource(videoService.getVideoPathForIdentifier(fileIdentifier));
         return getVideoResourceRegion(videoMedia, headers);
     }
 

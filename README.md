@@ -25,7 +25,6 @@ docker compose -f docker/docker-compose.yml up
 ```
 *(--build flag can be added for image rebuilding purposes)*  
 *(db container must be up for backend to start without errors!)*
-
 ## Backend endpoints
 ##### /videos/{videoIdentifier}
 Request for video partial content. (TO CHANGE: At this moment video names in `IdentifierToVideoMapperService` are hardcoded)

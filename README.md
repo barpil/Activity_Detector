@@ -30,10 +30,10 @@ docker compose -f docker/docker-compose.yml up
 *(db container must be up for backend to start without errors!)*
 ## Backend endpoints
 
-##### /videos
+##### GET /videos
 Return JSON of registered video record.
 
-##### /videos/{video_id}
+##### GET /videos/{video_id}
 Request for video partial content.
 
 ## Frontend endpoint (temporary overview build)

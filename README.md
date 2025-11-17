@@ -1,4 +1,7 @@
 # Activity Detector
+## Notes
+- Frontend is not dockerized at his moment.
+
 
 ## Requirements
 - Docker (tested on version 28.0.1)
@@ -26,5 +29,14 @@ docker compose -f docker/docker-compose.yml up
 *(--build flag can be added for image rebuilding purposes)*  
 *(db container must be up for backend to start without errors!)*
 ## Backend endpoints
-##### /videos/{videoIdentifier}
-Request for video partial content. (TO CHANGE: At this moment video names in `VideoService` are hardcoded)
+
+##### /videos
+Return JSON of registered video record.
+
+##### /videos/{video_id}
+Request for video partial content.
+
+## Frontend endpoint (temporary overview build)
+
+##### /video/{video_id}
+Presentation of video with video_id, in simple in-browser player.

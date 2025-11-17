@@ -1,5 +1,6 @@
 package com.actdet.backend.services;
 
+import com.actdet.backend.data.entities.Video;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -36,6 +37,5 @@ public class VideoSupplierService{
         range = rangeList.getFirst();
         return range.toResourceRegion(media);
     }
-
 
 }

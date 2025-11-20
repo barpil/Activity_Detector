@@ -48,8 +48,8 @@ public class MediaController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadVideo(@RequestParam("file") MultipartFile file,
                                          @RequestParam("video-name") String videoName,
-                                         @RequestParam("description") String description,
-                                         @RequestParam("relativePath") String pathToSaveIn){
+                                         @RequestParam(value = "description", required = false) String description,
+                                         @RequestParam("relative-path") String pathToSaveIn){
         if(!Video.hasSupportedExtension(Objects.requireNonNull(file.getOriginalFilename()))) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         videoStorageService.store(file, videoName, description, pathToSaveIn);
         return ResponseEntity.ok().build();

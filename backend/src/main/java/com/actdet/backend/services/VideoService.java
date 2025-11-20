@@ -20,11 +20,14 @@ public class VideoService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Path videoFolderPath;
-
+    private final int maxDepth;
     private final VideoRepository videoRepository;
 
     @Autowired
-    public VideoService(@Value("${activity-detector.video.folderPath}") String relativeFolderPath, VideoRepository videoRepository) {
+    public VideoService(@Value("${activity-detector.video.folderPath}") String relativeFolderPath,
+                        @Value("${activity-detector.video.subfolderDepth}") int subfolderDepth,
+                        VideoRepository videoRepository) {
+        this.maxDepth = subfolderDepth;
         this.videoRepository = videoRepository;
         //Aktualnie sciezka do katalogu jest wzgledem katalogu w ktorym uruchamiamy projekt
         Path baseDir = Paths.get("").toAbsolutePath();
@@ -45,7 +48,11 @@ public class VideoService {
     }
 
     public void saveVideoDatabaseRecord(String videoName, String videoPath){
-        Video video = Video.builder().name(videoName).pathToFile(videoPath).build();
+        saveVideoDatabaseRecord(videoName, null, videoPath);
+    }
+
+    public void saveVideoDatabaseRecord(String videoName, String description, String videoPath){
+        Video video = Video.builder().name(videoName).description(description).pathToFile(videoPath).build();
         if(videoRepository.existsVideoByPathToFile(videoPath)){
             return;
         }
@@ -76,6 +83,8 @@ public class VideoService {
         return deletedRecordsCount.get();
     }
 
+    public Path getVideoFolderPath(){return this.videoFolderPath;}
+    public int getMaxDepth(){return this.maxDepth;}
 
 
 }

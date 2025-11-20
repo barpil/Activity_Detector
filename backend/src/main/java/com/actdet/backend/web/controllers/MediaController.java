@@ -2,33 +2,35 @@ package com.actdet.backend.web.controllers;
 
 import com.actdet.backend.data.entities.Video;
 import com.actdet.backend.data.repositories.VideoRepository;
-import com.actdet.backend.services.VideoSupplierService;
+import com.actdet.backend.services.VideoStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/videos")
 public class MediaController {
 
-    private final VideoSupplierService videoSupplierService;
+    private final VideoStorageService videoStorageService;
     private final VideoRepository videoRepository;
 
 
     @Autowired
-    public MediaController(VideoSupplierService videoSupplierService, VideoRepository videoRepository) {
-        this.videoSupplierService = videoSupplierService;
+    public MediaController(VideoStorageService videoStorageService, VideoRepository videoRepository) {
+        this.videoStorageService = videoStorageService;
         this.videoRepository = videoRepository;
     }
 
     @GetMapping("/{fileIdentifier}")
     public ResponseEntity<ResourceRegion> getVideoMedia(@RequestHeader HttpHeaders headers,
                                                         @PathVariable String fileIdentifier) throws IOException {
-        ResourceRegion resource = videoSupplierService.getVideoResourceRegion(fileIdentifier, headers);
+        ResourceRegion resource = videoStorageService.getVideoResourceRegion(fileIdentifier, headers);
 
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                 .contentType(MediaTypeFactory.getMediaType(resource.getResource()).orElse(MediaType.APPLICATION_OCTET_STREAM))
@@ -41,6 +43,16 @@ public class MediaController {
     @GetMapping("")
     public List<Video> getAllVideos(){
         return videoRepository.findAll();
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadVideo(@RequestParam("file") MultipartFile file,
+                                         @RequestParam("video-name") String videoName,
+                                         @RequestParam("description") String description,
+                                         @RequestParam("relativePath") String pathToSaveIn){
+        if(!Video.hasSupportedExtension(Objects.requireNonNull(file.getOriginalFilename()))) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        videoStorageService.store(file, videoName, description, pathToSaveIn);
+        return ResponseEntity.ok().build();
     }
 
 }

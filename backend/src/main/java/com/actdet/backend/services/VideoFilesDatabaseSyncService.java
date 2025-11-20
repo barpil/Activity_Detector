@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 @Service
@@ -55,7 +54,7 @@ public class VideoFilesDatabaseSyncService {
         this.videoService = videoService;
         this.pathMap = new HashMap<>();
 
-        refreshAllData();
+        syncData();
 
         this.watchService = this.watchedDirectory.getFileSystem().newWatchService();
         registerAll(this.watchedDirectory, subfolderDepth);
@@ -80,38 +79,16 @@ public class VideoFilesDatabaseSyncService {
         logger.info("Watcher stopped.");
     }
 
-    protected void refreshAllData() throws IOException {
+    protected void syncData() {
         long deletedRecordCount = videoService.deleteNonExistentVideoRecords();
-        long addedDataCount = 0;
-        AtomicLong addingFailedCount = new AtomicLong();
-        try(Stream<Path> fileStream = Files.walk(this.watchedDirectory, this.maxSubfolderDepth+1)){ //+1 bo pliki wewnatrz katalogu a nie katalogi (dziwne ale tak to dzialaja glebokosci dla walk)
-            addedDataCount = fileStream
-                    .filter(path -> Files.isRegularFile(path) && Video.hasSupportedExtension(path))
-                    .filter(path -> {
-                        String relativePathString = getVideoRelativePathString(path);
-                        if(videoService.isVideoRecordRegistered(relativePathString)){
-                            return false;
-                        }
-
-                        try{
-                            videoService.saveVideoDatabaseRecord(path.getFileName().toString(), relativePathString);
-                            return true;
-                        } catch(Exception e){
-                            addingFailedCount.getAndIncrement();
-                            return false;
-                        }
-                    }).count();
-        }
-        if(addedDataCount != 0 || deletedRecordCount != 0 || addingFailedCount.get() != 0){
+        if(deletedRecordCount != 0){
             logger.info("""
-                        Video record data refreshed.
+                        Video record data synchronized.
                         #############################
                         Statistics:
-                        New records added: {}
                         Non existent records deleted: {}
-                        Adding record fails: {}
                         #############################"""
-                    , addedDataCount, deletedRecordCount, addingFailedCount.get());
+                    , deletedRecordCount);
         }else{
             logger.info("Video record data up to date.");
         }
@@ -206,7 +183,7 @@ public class VideoFilesDatabaseSyncService {
     private void onFileDeleted(Path deletedFilePath){
         if(Video.hasSupportedExtension(deletedFilePath)){
             logger.info("Usunieto plik video: {}", deletedFilePath);
-            videoService.deleteVideoDatabaseRecord(getVideoRelativePathString(deletedFilePath));
+            this.videoService.deleteVideoDatabaseRecord(getVideoRelativePathString(deletedFilePath));
 
         }
     }
@@ -223,11 +200,6 @@ public class VideoFilesDatabaseSyncService {
             }else{
                 logger.warn("Directory {} was not registered as its depth exceeds subfolderDepth={}.", createdFilePath, this.maxSubfolderDepth);
             }
-            return;
-        }
-        if(Video.hasSupportedExtension(createdFilePath)){
-            logger.info("Dodano plik video: {}", createdFilePath);
-            videoService.saveVideoDatabaseRecord(createdFilePath.getFileName().toString(), getVideoRelativePathString(createdFilePath));
         }
     }
 

@@ -1,7 +1,6 @@
 # Activity Detector
 ## Notes
-- Frontend is not dockerized at his moment.
-
+- Supported video extensions: mp4, mov
 
 ## Requirements
 - Docker (tested on version 28.0.1)
@@ -36,7 +35,22 @@ Return JSON of registered video record.
 ##### GET /videos/{video_id}
 Request for video partial content.
 
-## Frontend endpoint (temporary overview build)
+##### POST /videos/upload
+*multipart/form-data*
+Request parameters
+- *file* - video file with supported extension. 
+- *video-name* - video name which will be assigned in database
+- *description* - description for video (optional)
+- *relative-path* - path in which video will be saved in backend's file system.
 
-##### /video/{video_id}
+Saves specified video.
+
+**Example request**  
+`curl -X POST http://localhost:8080/videos/upload -F "file=@C:\Users\User\Videos\test_video.mov" -F "video-name=VIDEO_NAME" -F "description=DESCRIPTION" -F "relativePath=saved_video.mov"       `
+
+## Frontend endpoint (temporary overview build)
+##### GET / 
+Check if frontend is running.
+
+##### GET /video/{video_id}
 Presentation of video with video_id, in simple in-browser player.

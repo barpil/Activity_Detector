@@ -6,40 +6,25 @@ from abc import ABC, abstractmethod
 class VideoSource(ABC):
     @abstractmethod
     def get_frame(self):
-        """Zwraca (ret, frame)"""
         pass
 
     @abstractmethod
     def release(self):
-        """Zwalnia zasoby"""
         pass
+
+    def get_frame_rate(self):
+        if self.cap.isOpened():
+            return self.cap.get(cv2.CAP_PROP_FPS)
+        return 0.0
 
 class RTSPSource(VideoSource):
     def __init__(self, url):
         self.cap = cv2.VideoCapture(url)
-        self.lock = threading.Lock()
-        self.running = True
-        self.ret, self.frame = False, None
-
-        self.thread = threading.Thread(target=self._update, daemon=True)
-        self.thread.start()
-
-    def _update(self):
-        while self.running:
-            if self.cap.isOpened():
-                ret, frame = self.cap.read()
-                with self.lock:
-                    self.ret, self.frame = ret, frame
-            else:
-                time.sleep(0.1)
-
+    
     def get_frame(self):
-        with self.lock:
-            return self.ret, self.frame
+        return self.cap.read()
 
     def release(self):
-        self.running = False
-        self.thread.join()
         self.cap.release()
 
 class FileSource(VideoSource):

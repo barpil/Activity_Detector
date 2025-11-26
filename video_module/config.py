@@ -13,6 +13,11 @@ class Config:
     CAM_PORT = os.getenv('CAMERA_PORT')
     CAM_PATH = os.getenv('RTSP_PATH')
 
+    SHOW_VIDEO = bool(os.getenv('SHOW_VIDEO'))
+    VIDEO_HEIGHT = int(os.getenv('VIDEO_HEIGHT'))
+    VIDEO_WIDTH = int(os.getenv('VIDEO_WIDTH'))
+
+    MODEL_PATH = os.getenv('MODEL_PATH')
     FILE_PATH = os.getenv('TEST_FILE_PATH')
 
     @staticmethod
